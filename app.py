@@ -278,14 +278,15 @@ def save_update():
     description = request.form.get('description')
     file = request.files['file']
     
+    filename = None
     if file:
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         filename = f"{timestamp}_{file.filename}"
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'product', filename)
+        file.save(file_path)
         
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'product', filename))
-
-    #file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product/', file.filename))
-    res = conn.execute(f"""UPDATE tblProduct SET title = '{title}', cost = {cost}, price = {price} , category = '{category}' , description = '{description}' , image = '{filename}' WHERE id = {id}""")
+        
+    res = conn.execute("UPDATE tblProduct SET title = ?, cost = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?",(title, float(cost), float(price), category, description, filename, id))
     conn.commit()
     
     return redirect('/add_product')
