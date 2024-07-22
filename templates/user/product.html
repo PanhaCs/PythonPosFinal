@@ -1,0 +1,127 @@
+{% include "master/index.html" %}
+
+<style>
+    .cartt:hover{
+        box-shadow: 5px 5px 10px 1px rgba(0, 0, 0, 0.2);
+    }
+    .cartt{
+        border: 1px solid rgb(199, 196, 196);
+        transition: box-shadow 0.3s ease-in-out;
+        border-radius: 10px;
+        padding: 10px;
+    }
+</style>
+
+<div id="alert-container" style="position: fixed; top: 100px; right: 20px; z-index: 1000;"></div>
+<div class="container-fluid mt-5" style="width: 80%;">
+    <div class="row">
+        <div class="col-md-3 col-sm-6 mt-3" style="margin-left: 85%;">
+            <a href="/add_product" class="btn btn-primary"><span style="font-size: larger;">Add New Product</span></a>
+        </div>
+        
+    </div>
+    
+    <div class="row">
+        
+        {% for item in products %}  
+        <div class="col-md-3 col-sm-6 mt-3 cartt" >
+            <a  target="_blank" href="/product_detail?id={{ item['id'] }}" style="text-decoration: none; color: black;">
+                <div class="card" style="width: 100%; height: 450px; border: none; ">
+                    <center>
+                        {% if item.image != 'no_image' %}
+                        <img style="width: 300px; height: 280px; object-fit: cover;" src="/static/image/product/{{ item.image }}"
+                            onerror="this.src='/static/image/image_error.png';">
+                        
+                        {% endif %}
+                        
+                        {% if item.image == 'no_image' %}
+                        <img style="width: 300px; height: 280px; object-fit: cover;" src="/static/image/no-image.png">
+                        
+                        {% endif %}
+                    </center>
+                    <div class="card-body" style="height: 250px;">
+                        <h5 class="card-title" style="height: 30px;">
+                            {% set title = item.title.split() %}
+                            {% if title | length > 5 %}
+                            {{ title[:5] | join(' ') }}
+                            {% else %}
+                            {{ item.title }}
+                            {% endif %}
+                        </h5>
+                        <p class="card-text" style="height: 50px;">
+                            {% set words = item.description.split() %}
+                            {% if words | length > 10 %}
+                            {{ words[:10] | join(' ') }}...
+                            {% else %}
+                            {{ item.description }}
+                            {% endif %}
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            
+                            <!-- <form class="add-to-cart-form" action="{{ url_for('add_item') }}" method="post">
+                                <input type="hidden" name="item_id" value="{{item['id']}}">
+                                <button class="btn btn-primary" type="submit">Add to Cart</button>
+                            </form> -->
+                            <a href="/product_detail?id={{ item['id'] }}" class="btn btn-primary"> 
+                                More...
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('submit', function (event) {
+            if (event.target.classList.contains('add-to-cart-form')) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var form = event.target;
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // To identify AJAX request
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the response data
+                        showAlert(data.success ? 'Item added to cart successfully!' : 'Failed to add item to cart.', data.success ? 'success' : 'danger');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('An error occurred.', 'danger');
+                    });
+            }
+        });
+    });
+
+    function showAlert(message, type) {
+        var alertContainer = document.getElementById('alert-container');
+        var alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+        alertContainer.appendChild(alert);
+
+        // Automatically remove the alert after 3 seconds
+        setTimeout(function () {
+            alert.classList.remove('show');
+            alert.addEventListener('transitionend', function () {
+                alert.remove();
+            });
+        }, 3000);
+    }
+</script>

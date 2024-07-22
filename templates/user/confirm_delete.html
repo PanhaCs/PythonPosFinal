@@ -1,0 +1,39 @@
+{% include "master/index.html" %}
+
+<div class="container mt-5">
+    <div class="row">
+        <h2>Are you sure to delete,<span style="font-weight: bolder;color: red;">{{ current_product.title}}</span>?</h2>
+        <div class="col-md-5 col-sm-12">
+            {% if current_product.image != 'no_image' %}
+            <img style="width: 100%;" src="/static/image/product/{{ current_product.image }}"
+                onerror="this.src='/static/image/image_error.png';">
+
+            {% endif %}
+
+            {% if current_product.image == 'no_image' %}
+            <img style="width: 15%;" src="/static/image/no-image.png">
+
+            {% endif %}
+        </div>
+        <div class="col-md-7 col-sm-12">
+            <h3>{{ current_product.title }}</h3>
+            <strong>{{ current_product.description }}</strong>
+            <h4>
+                <span class="btn btn-danger mt-3">
+                    {{ current_product.price }} $
+                </span>
+            </h4>
+            <hr>
+            
+            <form action="{{url_for('delete_product')}}" method="post">
+                <a href="/add_product" class="btn btn-secondary">Back</a>
+                <input type="hidden" value="{{current_product.id}}" name="pid">
+                <button type="submit" class="btn btn-danger float-right">Confirm</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+<script>
+
+</script>

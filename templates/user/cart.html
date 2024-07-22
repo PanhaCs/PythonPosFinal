@@ -1,0 +1,63 @@
+{% include "master/index.html" %}
+<style>
+    td {
+        font-size: 25px;
+
+    }
+</style>
+<center>
+    <div class="row">
+        <div class="col-md-12 col-sm-12" style="padding: 20px 100px;">
+            <h2>Cart's Detail </h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-border">
+                    <thead>
+                        <tr style="background: #cccc;">
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Sub Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_products %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+                            <td>
+                                {% set title = item.title.split() %}
+                                {% if title | length > 5 %}
+                                {{ title[:5] | join(' ') }}
+                                {% else %}
+                                {{ item.title }}
+                                {% endif %}
+                            </td>
+                            <td><input type="number" value="{{item.qty}}" min="1"></td>
+                            <td>${{item.price}}</td>
+                            <td>${{item.qty * item.price }}</td>
+
+                            <td>
+
+                                <a href="/clear_selected?id={{item.id}}" class="btn btn-danger">Remove</a>
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- <a href="{{ url_for('clear_items')}}" class="btn btn-primary">Checkout</a> -->
+    <a href="/checkout" class="btn btn-primary">Checkout</a>
+
+
+</center>
